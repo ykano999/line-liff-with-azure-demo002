@@ -47,7 +47,7 @@ export default defineComponent({
     console.log("created() in App");
     liff.ready.then(this.initialized);
     await liff.init({ liffId: defaultLiffId });
-  }, 
+  },
   methods: {
     initialized(): void {
       console.log("initlized()");
