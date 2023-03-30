@@ -29,19 +29,21 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import liff from "@line/liff";
-
 const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
-
 type Color = "red" | "green" | "blue" | "yellow";
-
 export default defineComponent({
   name: "LiffDev",
-  data() {
+  setup() {
+    const lineVersion = "";
+    const isLoggedIn = false;
+    const response = "";
+    const isReady = false;
+
     return {
-      lineVersion: "",
-      isLoggedIn: false,
-      response: "",
-      isReady: false
+      lineVersion,
+      isLoggedIn,
+      response,
+      isReady,
     };
   },
   created() {
