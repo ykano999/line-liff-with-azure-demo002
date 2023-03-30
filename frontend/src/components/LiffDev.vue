@@ -42,11 +42,12 @@ export default defineComponent({
       isLoggedIn: false,
       response: "",
       isReady: false
+    };
   },
   async created() {
     console.log("created() in App");
-    await liff.init({ liffId: defaultLiffId });
     liff.ready.then(this.initialized);
+    await liff.init({ liffId: defaultLiffId });
   },
   methods: {
     initialized(): void {
