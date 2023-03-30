@@ -36,19 +36,24 @@ type Color = "red" | "green" | "blue" | "yellow";
 
 export default defineComponent({
   name: "LiffDev",
-  data() {
-    return {
-      lineVersion: "",
-      isLoggedIn: false,
-      response: "",
-      isReady: false
-    };
+data(): {
+  lineVersion: string;
+  isLoggedIn: boolean;
+  response: string;
+  isReady: boolean;
+} {
+  return {
+    lineVersion: "",
+    isLoggedIn: false,
+    response: "",
+    isReady: false,
+  };
   },
-  async created() {
-    console.log("created() in App");
-    liff.ready.then(this.initialized);
-    await liff.init({ liffId: defaultLiffId });
-  },
+async created(): Promise<void> {
+  console.log("created() in App");
+  liff.ready.then(this.initialized.bind(this));
+  await liff.init({ liffId: defaultLiffId });
+},
   methods: {
     initialized(): void {
       console.log("initlized()");
