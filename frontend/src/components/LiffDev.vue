@@ -27,74 +27,71 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import liff from "@line/liff";
+<script>
+var defineComponent = require("vue").defineComponent;
+var liff = require("@line/liff");
 
-const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
+var defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
+var Color = ["red", "green", "blue", "yellow"];
 
-type Color = "red" | "green" | "blue" | "yellow";
-
-export default defineComponent({
+module.exports = defineComponent({
   name: "LiffDev",
-  data() {
+  data: function() {
     return {
       lineVersion: "",
       isLoggedIn: false,
       response: "",
-      isReady: false,
+      isReady: false
     };
   },
-  created() {
+  created: async function() {
     console.log("created() in App");
-    liff.init({ liffId: defaultLiffId }).then(() => {
-      this.initialized();
-    });
+    liff.ready.then(this.initialized.bind(this));
+    await liff.init({ liffId: defaultLiffId });
   },
   methods: {
-    async initialized() {
-      console.log("initialized()");
+    initialized: function() {
+      console.log("initlized()");
       console.log("isInClient: " + liff.isInClient());
       if (!liff.isInClient() && !liff.isLoggedIn()) {
-        await liff.login();
+        liff.login();
       }
-      const lineVersion = liff.getLineVersion();
+
+      var lineVersion = liff.getLineVersion();
       if (lineVersion) {
         this.lineVersion = lineVersion;
       }
+
       this.isLoggedIn = liff.isLoggedIn();
       console.log("loggedIn: " + liff.isLoggedIn());
       this.isReady = true;
     },
-    async getProfile() {
+    getProfile: async function() {
       console.log("getProfile()");
-      const accessToken = liff.getAccessToken();
+      var accessToken = liff.getAccessToken();
       console.log("accessToken: " + accessToken);
-      const url = "/api/GetProfile";
-      const response = await fetch(url, {
+      var url = "/api/GetProfile";
+      var response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          token: accessToken
+        })
+      });
+      this.response = await response.json();
+    },
+    bet: async function(color) {
+      var accessToken = liff.getAccessToken();
+      console.log("accessToken: " + accessToken);
+      var url = "/api/Bet/default";
+      var response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({
           token: accessToken,
-        }),
+          selectedColor: color
+        })
       });
-      const data = await response.json();
-      this.response = data;
-    },
-    async bet(color: Color) {
-      console.log("bet()");
-      const accessToken = liff.getAccessToken();
-      console.log("accessToken: " + accessToken);
-      const url = "/api/Bet/default";
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          token: accessToken,
-          selectedColor: color,
-        }),
-      });
-      const data = await response.json();
-      this.response = data;
-    },
-  },
+      this.response = await response.json();
+    }
+  }
 });
 </script>
