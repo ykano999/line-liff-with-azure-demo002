@@ -32,6 +32,7 @@ import { defineComponent } from "vue";
 import liff from "@line/liff";
 
 const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
+
 type Color = "red" | "green" | "blue" | "yellow";
 
 export default defineComponent({
@@ -41,68 +42,59 @@ export default defineComponent({
       lineVersion: "",
       isLoggedIn: false,
       response: "",
-      isReady: false
+      isReady: false,
+    };
   },
-created: function() {
-  console.log("created() in App");
-  var self = this;
-  liff.ready.then(function() {
-    self.initialized();
-  });
-  liff.init({ liffId: defaultLiffId }).then(function() {
-    return;
-  });
-},
-methods: {
-  initialized: function() {
-    console.log("initlized()");
-    console.log("isInClient: " + liff.isInClient());
-    if (!liff.isInClient() && !liff.isLoggedIn()) {
-      liff.login();
-    }
-    var lineVersion = liff.getLineVersion();
-    if (lineVersion) {
-      this.lineVersion = lineVersion;
-    }
-    this.isLoggedIn = liff.isLoggedIn();
-    console.log("loggedIn: " + liff.isLoggedIn());
-    this.isReady = true;
-  },
-  getProfile: function() {
-    console.log("getProfile()");
-    var self = this;
-    var accessToken = liff.getAccessToken();
-    console.log("accessToken: " + accessToken);
-    var url = "/api/GetProfile";
-    return fetch(url, {
-      method: "POST",
-      body: JSON.stringify({
-        token: accessToken
-      })
-    }).then(function(response) {
-      return response.json();
-    }).then(function(data) {
-      self.response = data;
+  created() {
+    console.log("created() in App");
+    liff.init({ liffId: defaultLiffId }).then(() => {
+      this.initialized();
     });
   },
-  bet: function(color) {
-    console.log("bet()");
-    var self = this;
-    var accessToken = liff.getAccessToken();
-    console.log("accessToken: " + accessToken);
-    var url = "/api/Bet/default";
-    return fetch(url, {
-      method: "POST",
-      body: JSON.stringify({
-        token: accessToken,
-        selectedColor: color
-      })
-    }).then(function(response) {
-      return response.json();
-    }).then(function(data) {
-      self.response = data;
-    });
-  }
-}
+  methods: {
+    async initialized() {
+      console.log("initialized()");
+      console.log("isInClient: " + liff.isInClient());
+      if (!liff.isInClient() && !liff.isLoggedIn()) {
+        await liff.login();
+      }
+      const lineVersion = liff.getLineVersion();
+      if (lineVersion) {
+        this.lineVersion = lineVersion;
+      }
+      this.isLoggedIn = liff.isLoggedIn();
+      console.log("loggedIn: " + liff.isLoggedIn());
+      this.isReady = true;
+    },
+    async getProfile() {
+      console.log("getProfile()");
+      const accessToken = liff.getAccessToken();
+      console.log("accessToken: " + accessToken);
+      const url = "/api/GetProfile";
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          token: accessToken,
+        }),
+      });
+      const data = await response.json();
+      this.response = data;
+    },
+    async bet(color: Color) {
+      console.log("bet()");
+      const accessToken = liff.getAccessToken();
+      console.log("accessToken: " + accessToken);
+      const url = "/api/Bet/default";
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          token: accessToken,
+          selectedColor: color,
+        }),
+      });
+      const data = await response.json();
+      this.response = data;
+    },
+  },
 });
 </script>
