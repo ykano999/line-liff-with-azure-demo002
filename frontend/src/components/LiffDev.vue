@@ -33,22 +33,22 @@ const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
 type Color = "red" | "green" | "blue" | "yellow";
 export default defineComponent({
   name: "LiffDev",
-  setup() {
-    const lineVersion = "";
-    const isLoggedIn = false;
-    const response = "";
-    const isReady = false;
-
-    return {
-      lineVersion,
-      isLoggedIn,
-      response,
-      isReady,
-    };
-  },
-  created() {
-    console.log("created() in App");
-    this.initializeLiff();
+setup() {
+  const lineVersion: string = "";
+  const isLoggedIn: boolean = false;
+  const response: any = "";
+  const isReady: boolean = false;
+  return {
+    lineVersion,
+    isLoggedIn,
+    response,
+    isReady,
+  };
+},
+ created() {
+  console.log("created() in App");
+  liff.init({liffId: defaultLiffId}).then(() => {
+    this.initialized();
   },
   methods: {
     initialized() {
