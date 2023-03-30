@@ -26,50 +26,49 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from "vue";
 import liff from "@line/liff";
+
 const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
 type Color = "red" | "green" | "blue" | "yellow";
+
 export default defineComponent({
   name: "LiffDev",
-  setup() {
-    const lineVersion = "";
-    const isLoggedIn = false;
-    const response = "";
-    const isReady = false;
-    const initializeLiff = () => {
-    };
+  data() {
     return {
-      lineVersion,
-      isLoggedIn,
-      response,
-      isReady,
-      initializeLiff,
+      lineVersion: "",
+      isLoggedIn: false,
+      response: "",
+      isReady: false
     };
   },
-  created() {
+  async created() {
     console.log("created() in App");
-    this.initializeLiff();
+    liff.ready.then(this.initialized);
+    await liff.init({ liffId: defaultLiffId });
   },
   methods: {
-    initialized() {
+    initialized(): void {
       console.log("initlized()");
       console.log(`isInClient: ${liff.isInClient()}`);
       if (!liff.isInClient() && !liff.isLoggedIn()) {
         liff.login();
       }
+
       const lineVersion = liff.getLineVersion();
       if (lineVersion) {
         this.lineVersion = lineVersion;
       }
+
       this.isLoggedIn = liff.isLoggedIn();
       console.log(`loggedIn: ${liff.isLoggedIn()}`);
       this.isReady = true;
     },
     async getProfile() {
       console.log("getProfile()");
-      const accessToken = await liff.getAccessToken();
+      const accessToken = liff.getAccessToken();
       console.log(`accessToken: ${accessToken}`);
       const url = "/api/GetProfile";
       const response = await fetch(url, {
@@ -81,7 +80,7 @@ export default defineComponent({
       this.response = await response.json();
     },
     async bet(color: Color) {
-      const accessToken = await liff.getAccessToken();
+      const accessToken = liff.getAccessToken();
       console.log(`accessToken: ${accessToken}`);
       const url = "/api/Bet/default";
       const response = await fetch(url, {
@@ -92,7 +91,7 @@ export default defineComponent({
         })
       });
       this.response = await response.json();
-    },
+    }
   }
 });
 </script>
