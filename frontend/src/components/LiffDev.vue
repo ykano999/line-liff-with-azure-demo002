@@ -28,7 +28,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent } from 'vue'
+import { reactive } from '@vue/reactivity'
 import liff from "@line/liff";
 const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
 type Color = "red" | "green" | "blue" | "yellow";
