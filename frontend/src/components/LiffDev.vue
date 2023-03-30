@@ -28,35 +28,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
 import liff from "@line/liff";
 const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
 type Color = "red" | "green" | "blue" | "yellow";
-
 interface Data {
   lineVersion: string;
   isLoggedIn: boolean;
   response: string;
   isReady: boolean;
 }
-
 export default defineComponent({
   name: "LiffDev",
-  data(): Data {
-    return {
+  setup() {
+    const state = reactive<Data>({
       lineVersion: "",
       isLoggedIn: false,
       response: "",
       isReady: false,
-    };
-  },
-  async created() {
-    console.log("created() in App");
-    liff.ready.then(this.initialized.bind(this));
-    await liff.init({ liffId: defaultLiffId });
-  },
-  methods: {
-    initialized(this: any): void {
+    });
+
+    const initialized = (): void => {
       console.log("initlized()");
       console.log(`isInClient: ${liff.isInClient()}`);
       if (!liff.isInClient() && !liff.isLoggedIn()) {
@@ -64,13 +56,14 @@ export default defineComponent({
       }
       const lineVersion = liff.getLineVersion();
       if (lineVersion) {
-        this.lineVersion = lineVersion;
+        state.lineVersion = lineVersion;
       }
-      this.isLoggedIn = liff.isLoggedIn();
+      state.isLoggedIn = liff.isLoggedIn();
       console.log(`loggedIn: ${liff.isLoggedIn()}`);
-      this.isReady = true;
-    },
-    async getProfile(this: any) {
+      state.isReady = true;
+    };
+
+    const getProfile = async (): Promise<void> => {
       console.log("getProfile()");
       const accessToken = liff.getAccessToken();
       console.log(`accessToken: ${accessToken}`);
@@ -81,9 +74,10 @@ export default defineComponent({
           token: accessToken,
         }),
       });
-      this.response = await response.json();
-    },
-    async bet(this: any, color: Color) {
+      state.response = await response.json();
+    };
+
+    const bet = async (color: Color): Promise<void> => {
       const accessToken = liff.getAccessToken();
       console.log(`accessToken: ${accessToken}`);
       const url = "/api/Bet/default";
@@ -94,8 +88,12 @@ export default defineComponent({
           selectedColor: color,
         }),
       });
-      this.response = await response.json();
-    }
-  }
+      state.response = await response.json();
+    };
+
+    liff.ready.then(initialized);
+
+    return { state, getProfile, bet };
+  },
 });
 </script>
