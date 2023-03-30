@@ -41,7 +41,6 @@ export default defineComponent({
       isLoggedIn: false,
       response: "",
       isReady: false
-    };
   },
   created() {
     console.log("created() in App");
