@@ -31,6 +31,7 @@ import { defineComponent } from "vue";
 import liff from "@line/liff";
 
 const defaultLiffId = process.env.VUE_APP_LIFF_ID || "";
+
 type Color = "red" | "green" | "blue" | "yellow";
 
 export default defineComponent({
@@ -41,6 +42,7 @@ export default defineComponent({
       isLoggedIn: false,
       response: "",
       isReady: false
+    };
   },
   created() {
     console.log("created() in App");
@@ -53,12 +55,10 @@ export default defineComponent({
       if (!liff.isInClient() && !liff.isLoggedIn()) {
         liff.login();
       }
-
       const lineVersion = liff.getLineVersion();
       if (lineVersion) {
         this.lineVersion = lineVersion;
       }
-
       this.isLoggedIn = liff.isLoggedIn();
       console.log(`loggedIn: ${liff.isLoggedIn()}`);
       this.isReady = true;
@@ -88,7 +88,7 @@ export default defineComponent({
         })
       });
       this.response = await response.json();
-    }
+    },
   }
 });
 </script>
